@@ -5,9 +5,12 @@ export const generateTokenAndSetCookie = (userId, res) => {
     expiresIn: "10d",
   });
 
+  const isProduction = process.env.NODE_ENV === "production";
+
   res.cookie("jwt", token, {
     maxAge: 10 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: process.env.NODE_ENV !== "development",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
   });
 };
