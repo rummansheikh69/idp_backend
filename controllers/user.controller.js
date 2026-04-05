@@ -1,4 +1,5 @@
 import { Banner } from "../models/banner.js";
+import { Gallery } from "../models/gallery.model.js";
 import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { v2 as cloudinary } from "cloudinary";
@@ -6,7 +7,9 @@ import nodemailer from "nodemailer";
 
 export const getAllUsers = asyncHandler(async (req, res) => {
   try {
-    const users = await User.find({ isAdmin: false }).select("-password");
+    const users = await User.find({ isAdmin: false })
+      .sort({ createdAt: -1 })
+      .select("-password");
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
@@ -38,7 +41,7 @@ export const getAllBanners = asyncHandler(async (req, res) => {
 
 export const createBanner = async (req, res) => {
   try {
-    const { image } = req.body;
+    const { image, title, description, tag } = req.body;
 
     if (!image) {
       return res.status(400).json({ message: "Image is required" });
@@ -50,6 +53,9 @@ export const createBanner = async (req, res) => {
 
     const banner = await Banner.create({
       image: uploadResponse.secure_url,
+      title,
+      description,
+      tag,
     });
 
     res.status(201).json(banner);
@@ -104,6 +110,83 @@ export const updateBanner = async (req, res) => {
     res.status(200).json(banner);
   } catch (error) {
     console.error("Update banner error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getAllGalleryItems = asyncHandler(async (req, res) => {
+  try {
+    const galleryItems = await Gallery.find().sort({ createdAt: -1 });
+    res.status(200).json(galleryItems);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+export const addGallery = async (req, res) => {
+  try {
+    const { image, title, description } = req.body;
+    if (!image) {
+      return res.status(400).json({ message: "Image is required" });
+    }
+    const uploadResponse = await cloudinary.uploader.upload(image, {
+      folder: "idp",
+    });
+    const galleryItem = await Gallery.create({
+      image: uploadResponse.secure_url,
+      title,
+      description,
+    });
+    res.status(201).json(galleryItem);
+  } catch (error) {
+    console.error("Create gallery error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const deleteGallery = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const galleryItem = await Gallery.findById(id);
+    if (!galleryItem) {
+      return res.status(404).json({ message: "Gallery item not found" });
+    }
+    if (galleryItem?.image) {
+      const publicId = galleryItem.image.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(publicId);
+    }
+    await Gallery.findByIdAndDelete(id);
+    res.status(200).json({ message: "Gallery item deleted successfully" });
+  } catch (error) {
+    console.error("Delete gallery error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const updateGallery = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, image } = req.body;
+    const galleryItem = await Gallery.findById(id);
+    if (!galleryItem) {
+      return res.status(404).json({ message: "Gallery item not found" });
+    }
+    if (image) {
+      const uploadResponse = await cloudinary.uploader.upload(image, {
+        folder: "idp",
+      });
+      if (galleryItem?.image) {
+        const publicId = galleryItem.image.split("/").pop().split(".")[0];
+        await cloudinary.uploader.destroy(publicId);
+      }
+      galleryItem.image = uploadResponse.secure_url;
+    }
+    galleryItem.title = title || galleryItem.title;
+    galleryItem.description = description || galleryItem.description;
+    await galleryItem.save();
+    res.status(200).json(galleryItem);
+  } catch (error) {
+    console.error("Update gallery error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
