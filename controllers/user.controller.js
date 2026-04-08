@@ -5,6 +5,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { v2 as cloudinary } from "cloudinary";
 import nodemailer from "nodemailer";
 
+APPLICATION_EMAIL = "khulna@visaexpressbd.com";
+COUNSELLING_EMAIL = "khulna@visaexpressbd.com";
+
 export const getAllUsers = asyncHandler(async (req, res) => {
   try {
     const users = await User.find({ isAdmin: false })
@@ -1732,7 +1735,7 @@ export const applicationForm = async (req, res) => {
 
     const mailOptions = {
       from: `"New Application of ${firstName}" <${process.env.GMAIL_ID}>`,
-      to: process.env.APPLICATION_EMAIL,
+      to: APPLICATION_EMAIL,
       subject: `New Application: ${firstName}`,
       html: htmlContent,
     };
@@ -2043,7 +2046,7 @@ export const counsellingForm = async (req, res) => {
 
     const mailOptions = {
       from: `"New Counselling Request from ${name}" <${process.env.GMAIL_ID}>`,
-      to: process.env.COUNSELLING_EMAIL,
+      to: COUNSELLING_EMAIL,
       subject: `New Counselling Request: ${name}`,
       html: htmlContent,
     };
