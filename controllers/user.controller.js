@@ -5,8 +5,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { v2 as cloudinary } from "cloudinary";
 import nodemailer from "nodemailer";
 
-APPLICATION_EMAIL = "khulna@visaexpressbd.com";
-COUNSELLING_EMAIL = "khulna@visaexpressbd.com";
+const APPLICATION_EMAIL = "khulna@visaexpressbd.com";
+const COUNSELLING_EMAIL = "khulna@visaexpressbd.com";
 
 export const getAllUsers = asyncHandler(async (req, res) => {
   try {
