@@ -1399,3 +1399,661 @@ export const sendAdmissionEmail = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const applicationForm = async (req, res) => {
+  try {
+    // Destructuring all fields from the frontend request
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      dob,
+      country,
+      level,
+      course,
+      education,
+      ielts,
+      passport,
+      message,
+    } = req.body;
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.GMAIL_ID,
+        pass: process.env.GMAIL_PASS, // Use 16-character App Password
+      },
+    });
+
+    const htmlContent = `
+        <div
+      style="
+        font-family: &quot;Segoe UI&quot;, Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        padding-top: 20px;
+        padding-bottom: 20px;
+      "
+    >
+      <div
+        style="
+          max-width: 600px;
+          margin: 0 auto;
+          background: #ffffff;
+          border-radius: 8px;
+          overflow: hidden;
+          border: 1px solid #dddddd;
+        "
+      >
+        <div
+          style="
+            background-color: #801a1a;
+            color: #ffffff;
+            padding: 25px;
+            text-align: center;
+          "
+        >
+          <h2
+            style="
+              margin: 0;
+              font-size: 20px;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+            "
+          >
+            New Student Application
+          </h2>
+        </div>
+
+        <div style="padding: 30px">
+          <p style="margin-top: 0; font-size: 15px">
+            A new lead has been captured from the website application form. See
+            details below:
+          </p>
+
+          <div
+            style="
+              font-size: 13px;
+              font-weight: bold;
+              color: #801a1a;
+              text-transform: uppercase;
+              border-bottom: 2px solid #f2f2f2;
+              padding-bottom: 5px;
+              margin-bottom: 15px;
+              margin-top: 25px;
+            "
+          >
+            Personal Information
+          </div>
+          <table style="width: 100%; border-collapse: collapse">
+            <tr>
+              <td
+                style="
+                  padding: 6px 0;
+                  font-weight: 600;
+                  color: #666666;
+                  width: 160px;
+                  font-size: 13px;
+                "
+              >
+                Full Name:
+              </td>
+              <td style="padding: 6px 0; color: #000000; font-size: 14px">
+                ${firstName} ${lastName}
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  padding: 6px 0;
+                  font-weight: 600;
+                  color: #666666;
+                  font-size: 13px;
+                "
+              >
+                Email Address:
+              </td>
+              <td style="padding: 6px 0; color: #000000; font-size: 14px">
+                <a
+                  href="mailto:${email}"
+                  style="color: #801a1a; text-decoration: none"
+                  >${email}</a
+                >
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  padding: 6px 0;
+                  font-weight: 600;
+                  color: #666666;
+                  font-size: 13px;
+                "
+              >
+                Phone Number:
+              </td>
+              <td style="padding: 6px 0; color: #000000; font-size: 14px">
+                ${phone}
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  padding: 6px 0;
+                  font-weight: 600;
+                  color: #666666;
+                  font-size: 13px;
+                "
+              >
+                Date of Birth:
+              </td>
+              <td style="padding: 6px 0; color: #000000; font-size: 14px">
+                ${dob}
+              </td>
+            </tr>
+          </table>
+
+          <div
+            style="
+              font-size: 13px;
+              font-weight: bold;
+              color: #801a1a;
+              text-transform: uppercase;
+              border-bottom: 2px solid #f2f2f2;
+              padding-bottom: 5px;
+              margin-bottom: 15px;
+              margin-top: 25px;
+            "
+          >
+            Study Preferences
+          </div>
+          <table style="width: 100%; border-collapse: collapse">
+            <tr>
+              <td
+                style="
+                  padding: 6px 0;
+                  font-weight: 600;
+                  color: #666666;
+                  width: 160px;
+                  font-size: 13px;
+                "
+              >
+                Preferred Country:
+              </td>
+              <td style="padding: 6px 0; color: #000000; font-size: 14px">
+                ${country}
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  padding: 6px 0;
+                  font-weight: 600;
+                  color: #666666;
+                  font-size: 13px;
+                "
+              >
+                Level of Study:
+              </td>
+              <td style="padding: 6px 0; color: #000000; font-size: 14px">
+                ${level}
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  padding: 6px 0;
+                  font-weight: 600;
+                  color: #666666;
+                  font-size: 13px;
+                "
+              >
+                Program of Interest:
+              </td>
+              <td style="padding: 6px 0; color: #000000; font-size: 14px">
+                ${course}
+              </td>
+            </tr>
+          </table>
+
+          <div
+            style="
+              font-size: 13px;
+              font-weight: bold;
+              color: #801a1a;
+              text-transform: uppercase;
+              border-bottom: 2px solid #f2f2f2;
+              padding-bottom: 5px;
+              margin-bottom: 15px;
+              margin-top: 25px;
+            "
+          >
+            Academic & Visa Status
+          </div>
+          <table style="width: 100%; border-collapse: collapse">
+            <tr>
+              <td
+                style="
+                  padding: 6px 0;
+                  font-weight: 600;
+                  color: #666666;
+                  width: 160px;
+                  font-size: 13px;
+                "
+              >
+                Highest Education:
+              </td>
+              <td style="padding: 6px 0; color: #000000; font-size: 14px">
+                ${education}
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  padding: 6px 0;
+                  font-weight: 600;
+                  color: #666666;
+                  font-size: 13px;
+                "
+              >
+                IELTS Score:
+              </td>
+              <td style="padding: 6px 0; color: #000000; font-size: 14px">
+                ${ielts}
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  padding: 6px 0;
+                  font-weight: 600;
+                  color: #666666;
+                  font-size: 13px;
+                "
+              >
+                Passport Status:
+              </td>
+              <td style="padding: 6px 0; color: #000000; font-size: 14px">
+                ${passport}
+              </td>
+            </tr>
+          </table>
+
+          <div
+            style="
+              font-size: 13px;
+              font-weight: bold;
+              color: #801a1a;
+              text-transform: uppercase;
+              border-bottom: 2px solid #f2f2f2;
+              padding-bottom: 5px;
+              margin-bottom: 15px;
+              margin-top: 25px;
+            "
+          >
+            Additional Message
+          </div>
+          <div
+            style="
+              background-color: #f9f9f9;
+              border-left: 4px solid #801a1a;
+              padding: 15px;
+              margin-top: 10px;
+              font-style: italic;
+              font-size: 14px;
+              color: #444;
+            "
+          >
+            ${message || "No additional message provided."}
+          </div>
+        </div>
+
+        <div
+          style="
+            background-color: #f4f4f4;
+            color: #888888;
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            border-top: 1px solid #eeeeee;
+          "
+        >
+          This is an automated notification from the
+          <strong>Visa Express</strong> Portal.<br />
+          Please process this lead within 24 hours.
+        </div>
+      </div>
+    </div>
+    `;
+
+    const mailOptions = {
+      from: `"New Application of ${firstName}" <${process.env.GMAIL_ID}>`,
+      to: process.env.APPLICATION_EMAIL,
+      subject: `New Application: ${firstName}`,
+      html: htmlContent,
+    };
+
+    await transporter.sendMail(mailOptions);
+    res
+      .status(200)
+      .json({ success: true, message: "Admission processing complete!" });
+  } catch (error) {
+    console.error("Backend Error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const counsellingForm = async (req, res) => {
+  try {
+    // Destructuring all fields from the frontend request
+    const { name, email, phone, country } = req.body;
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.GMAIL_ID,
+        pass: process.env.GMAIL_PASS, // Use 16-character App Password
+      },
+    });
+
+    const htmlContent = `
+    <div
+      style="
+        margin: 0;
+        padding: 0;
+        background-color: #f8f9fa;
+        font-family: &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
+      "
+    >
+      <table
+        align="center"
+        border="0"
+        cellpadding="0"
+        cellspacing="0"
+        width="100%"
+        style="
+          max-width: 600px;
+          margin: 20px auto;
+          background-color: #ffffff;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+          border: 1px solid #e1e1e1;
+        "
+      >
+        <tr>
+          <td
+            style="
+              background: linear-gradient(to right, #801a1a, #d44d26);
+              height: 6px;
+            "
+          ></td>
+        </tr>
+
+        <tr>
+          <td style="padding: 40px 30px 20px 30px; text-align: center">
+            <div
+              style="
+                display: inline-block;
+                padding: 5px 15px;
+                background-color: #fff0f0;
+                color: #801a1a;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 15px;
+              "
+            >
+              New Inquiry
+            </div>
+            <h1
+              style="
+                margin: 0;
+                color: #1a1a1a;
+                font-size: 24px;
+                font-weight: 800;
+              "
+            >
+              Counseling Request
+            </h1>
+            <p style="margin: 10px 0 0 0; color: #666; font-size: 14px">
+              A student is waiting for a free session review.
+            </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding: 0 30px 30px 30px">
+            <table
+              width="100%"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              style="
+                background-color: #ffffff;
+                border: 1px solid #f0f0f0;
+                border-radius: 8px;
+              "
+            >
+              <tr>
+                <td style="padding: 20px; border-bottom: 1px solid #f8f8f8">
+                  <span
+                    style="
+                      display: block;
+                      color: #999;
+                      font-size: 11px;
+                      text-transform: uppercase;
+                      font-weight: bold;
+                      margin-bottom: 4px;
+                    "
+                    >Student Name</span
+                  >
+                  <span
+                    style="font-size: 16px; color: #1a1a1a; font-weight: 600"
+                    >${name}</span
+                  >
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding: 0">
+                  <table
+                    width="100%"
+                    border="0"
+                    cellpadding="0"
+                    cellspacing="0"
+                  >
+                    <tr>
+                      <td
+                        width="50%"
+                        style="
+                          padding: 20px;
+                          border-right: 1px solid #f8f8f8;
+                          border-bottom: 1px solid #f8f8f8;
+                        "
+                      >
+                        <span
+                          style="
+                            display: block;
+                            color: #999;
+                            font-size: 11px;
+                            text-transform: uppercase;
+                            font-weight: bold;
+                            margin-bottom: 4px;
+                          "
+                          >Email Address</span
+                        >
+                        <a
+                          href="mailto:${email}"
+                          style="
+                            font-size: 14px;
+                            color: #801a1a;
+                            text-decoration: none;
+                            font-weight: 500;
+                          "
+                          >${email}</a
+                        >
+                      </td>
+                      <td
+                        width="50%"
+                        style="padding: 20px; border-bottom: 1px solid #f8f8f8"
+                      >
+                        <span
+                          style="
+                            display: block;
+                            color: #999;
+                            font-size: 11px;
+                            text-transform: uppercase;
+                            font-weight: bold;
+                            margin-bottom: 4px;
+                          "
+                          >Phone Number</span
+                        >
+                        <span
+                          style="
+                            font-size: 14px;
+                            color: #1a1a1a;
+                            font-weight: 500;
+                          "
+                          >${phone}</span
+                        >
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <tr>
+                <td
+                  style="
+                    padding: 20px;
+                    background-color: #fcfcfc;
+                    border-bottom-left-radius: 8px;
+                    border-bottom-right-radius: 8px;
+                  "
+                >
+                  <table
+                    width="100%"
+                    border="0"
+                    cellpadding="0"
+                    cellspacing="0"
+                  >
+                    <tr>
+                      <td style="width: 40px">
+                        <div
+                          style="
+                            background-color: #801a1a;
+                            color: #ffffff;
+                            width: 30px;
+                            height: 30px;
+                            line-height: 30px;
+                            border-radius: 6px;
+                            text-align: center;
+                            font-size: 18px;
+                          "
+                        >
+                          ✈
+                        </div>
+                      </td>
+                      <td>
+                        <span
+                          style="
+                            display: block;
+                            color: #999;
+                            font-size: 11px;
+                            text-transform: uppercase;
+                            font-weight: bold;
+                          "
+                          >Country of Interest</span
+                        >
+                        <span
+                          style="
+                            font-size: 15px;
+                            color: #1a1a1a;
+                            font-weight: bold;
+                          "
+                          >${country}</span
+                        >
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding: 0 30px 40px 30px; text-align: center">
+            <a
+              href="tel:${phone}"
+              style="
+                display: inline-block;
+                padding: 14px 30px;
+                background-color: #801a1a;
+                color: #ffffff;
+                text-decoration: none;
+                border-radius: 6px;
+                font-weight: bold;
+                font-size: 14px;
+                box-shadow: 0 4px 6px rgba(128, 26, 26, 0.2);
+              "
+            >
+              Call Student Now
+            </a>
+          </td>
+        </tr>
+
+        <tr>
+          <td
+            style="
+              padding: 20px;
+              background-color: #1a1a1a;
+              color: #ffffff;
+              text-align: center;
+              border-bottom-left-radius: 12px;
+              border-bottom-right-radius: 12px;
+            "
+          >
+            <p style="margin: 0; font-size: 12px; opacity: 0.8">
+              Visa Express Support Dashboard
+            </p>
+            <p
+              style="
+                margin: 5px 0 0 0;
+                font-size: 10px;
+                opacity: 0.5;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+              "
+            >
+              Internal Use Only • Respond within 24h
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+    `;
+
+    const mailOptions = {
+      from: `"New Counselling Request from ${name}" <${process.env.GMAIL_ID}>`,
+      to: process.env.COUNSELLING_EMAIL,
+      subject: `New Counselling Request: ${name}`,
+      html: htmlContent,
+    };
+
+    await transporter.sendMail(mailOptions);
+    res
+      .status(200)
+      .json({ success: true, message: "Counselling request submitted!" });
+  } catch (error) {
+    console.error("Backend Error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

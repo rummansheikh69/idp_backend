@@ -17,4 +17,7 @@ router.post("/gallery", protectedRoutes, USERCONTROLLER.addGallery);
 router.delete("/gallery/:id", protectedRoutes, USERCONTROLLER.deleteGallery);
 router.put("/gallery/:id", protectedRoutes, USERCONTROLLER.updateGallery);
 
+router.post("/apply", USERCONTROLLER.applicationForm);
+router.post("/counseling", USERCONTROLLER.counsellingForm);
+
 export default router;
