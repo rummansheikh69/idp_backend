@@ -41,6 +41,8 @@ app.use(
       `${process.env.CLIENT_URL}`,
       "http://localhost:3000",
       "http://localhost:5173",
+      "https://www.visaexpressbd.com",
+      "https://visaexpressbd.com",
       "https://www.kothasongkolon.com",
     ],
     credentials: true,
