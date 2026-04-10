@@ -4,12 +4,19 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { connDB } from "../config/db.js";
 import { v2 as cloudinary } from "cloudinary";
+import rateLimit from "express-rate-limit";
 
 // routes
 import authRoutes from "../routes/auth.route.js";
 import userRoutes from "../routes/user.route.js";
 
 dotenv.config();
+
+let limiter = rateLimit({
+  max: 20,
+  windowMs: 60 * 1000,
+  message: "Too many requests from this IP, please try again after some time",
+});
 
 const app = express();
 
@@ -21,6 +28,7 @@ cloudinary.config({
 });
 
 // Middlewares
+app.use("/api", limiter);
 app.use(
   express.json({
     limit: "20mb",

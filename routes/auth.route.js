@@ -8,10 +8,6 @@ router.get("/me", protectedRoutes, AUTHCONTROLLER.getMe);
 router.post("/register", AUTHCONTROLLER.register);
 router.post("/login", AUTHCONTROLLER.login);
 router.post("/logout", AUTHCONTROLLER.logout);
-router.post(
-  "/change-password/:id",
-  protectedRoutes,
-  AUTHCONTROLLER.changePassword,
-);
+router.post("/change-password", protectedRoutes, AUTHCONTROLLER.changePassword);
 router.post("/change-email/:id", protectedRoutes, AUTHCONTROLLER.changeEmail);
 export default router;

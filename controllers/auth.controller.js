@@ -88,31 +88,32 @@ const logout = asyncHandler(async (req, res) => {
 
 const changePassword = asyncHandler(async (req, res) => {
   try {
-    const { newPass } = req.body;
-    const userId = req.params.id;
+    const { newPassword, confirmNewPassword } = req.body;
+    const userId = req.user._id;
 
     let user = await User.findById(userId);
     if (!user) {
       return res.status(400).json({ error: "User not found" });
     }
 
-    if (!newPass) {
+    if (!newPassword) {
       return res.status(400).json({ error: "New password is required" });
     }
 
     // Change password
-    if (newPass) {
-      if (newPass.length < 6) {
-        return res
-          .status(401)
-          .json({ error: "Password must be at least 6 characters long" });
-      }
-
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({ error: "Passwords do not match" });
+    }
+    if (newPassword.length < 6) {
+      return res
+        .status(401)
+        .json({ error: "Password must be at least 6 characters long" });
+    } else {
       const salt = await bcrypt.genSalt(10);
-      const hashPass = await bcrypt.hash(newPass.trim(), salt);
+      const hashPass = await bcrypt.hash(newPassword.trim(), salt);
       user.password = hashPass || user.password;
       user = await user.save();
-      res.status(200).json(user);
+      res.status(200).json({ ...user._doc, password: undefined });
     }
   } catch (error) {
     console.log("error in change pass", error);
