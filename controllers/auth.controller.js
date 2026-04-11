@@ -79,13 +79,18 @@ const login = asyncHandler(async (req, res) => {
 
 const logout = asyncHandler(async (req, res) => {
   try {
-    res.cookie("jwt", "", { maxAge: 0 });
-    res.status(201).json({ message: "Logged out" });
+    // We clear 'jwt' by sending the exact same attributes used to create it
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+
+    res.status(200).json({ message: "Logged out" });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 const changePassword = asyncHandler(async (req, res) => {
   try {
     const { newPassword, confirmNewPassword } = req.body;
